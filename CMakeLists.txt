@@ -14,5 +14,9 @@ include_directories(gsl
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
+include(GenerateExportHeader)
+
 add_library(matrix STATIC ${library_sources})
 target_link_libraries(matrix gsl)
+generate_export_header(matrix)
+add_compiler_export_flags()

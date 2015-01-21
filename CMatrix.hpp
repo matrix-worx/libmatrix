@@ -1,9 +1,10 @@
 #ifndef CMATRIX_HPP
 #define CMATRIX_HPP
 
+#include "matrix_export.h"
 #include <gsl/gsl_matrix.h>
 
-class CMatrix
+class MATRIX_EXPORT CMatrix
 {
 public:
     CMatrix( size_t rows, size_t cols );
