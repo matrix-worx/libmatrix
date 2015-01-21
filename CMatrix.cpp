@@ -1,16 +1,19 @@
 #include "CMatrix.hpp"
+#include "CMatrixException.hpp"
 
 CMatrix::CMatrix( size_t rows, size_t cols )
 {
     mMatrix = gsl_matrix_calloc( rows, cols );
-    /// TODO: check nullptr and throw exception;
+    if ( !mMatrix )
+    {
+        throw CMatrixException( "Can't allocate memory for matrix" );
+    }
 }
 
 CMatrix::CMatrix( const CMatrix& other )
 {
-    mMatrix = gsl_matrix_alloc( other.rows(), other.cols() );
-    gsl_matrix_memcpy( mMatrix, other.mMatrix );
-    ///TODO: check GSL_SUCCESS or throw exception
+    mMatrix = matrixAlloc( other.rows(), other.cols() );
+    copyRawMatrix( mMatrix, other.mMatrix );
 }
 
 CMatrix& CMatrix::operator=( const CMatrix& other )
@@ -19,16 +22,14 @@ CMatrix& CMatrix::operator=( const CMatrix& other )
     {
         if ( rows() != other.rows() || cols() != other.cols() )
         {
-            gsl_matrix* newMatrix = gsl_matrix_alloc( other.rows(), other.cols() );
-            gsl_matrix_memcpy( newMatrix, other.mMatrix );
-            ///TODO: check GSL_SUCCESS or throw exception
+            gsl_matrix* newMatrix = matrixAlloc( other.rows(), other.cols() );
+            copyRawMatrix( newMatrix, other.mMatrix );
             gsl_matrix_free( mMatrix );
             mMatrix = newMatrix;
         }
         else
         {
-            gsl_matrix_memcpy( mMatrix, other.mMatrix );
-            ///TODO: check GSL_SUCCESS or throw exception
+            copyRawMatrix( mMatrix, other.mMatrix );
         }
     }
     return *this;
@@ -67,5 +68,26 @@ const double& CMatrix::operator()( size_t rowIndex, size_t columnIndex ) const
 double& CMatrix::operator()( size_t rowIndex, size_t columnIndex )
 {
     return *gsl_matrix_ptr( mMatrix, rowIndex, columnIndex );
+}
+
+void CMatrix::copyRawMatrix( gsl_matrix* destination, gsl_matrix* source )
+{
+    int result = gsl_matrix_memcpy( destination, source );
+    if ( result != GSL_SUCCESS )
+    {
+        throw CMatrixException( "Can't copy matrix" );
+    }
+}
+
+gsl_matrix* CMatrix::matrixAlloc( size_t rows, size_t cols )
+{
+    gsl_matrix* matrix = gsl_matrix_alloc( rows, cols );
+
+    if ( !matrix )
+    {
+        throw CMatrixException( "Can't allocate memory for matrix" );
+    }
+
+    return matrix;
 }
 

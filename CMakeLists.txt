@@ -6,6 +6,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(library_sources
     CMatrix.hpp
     CMatrix.cpp
+    CMatrixException.hpp
+    CMatrixException.cpp
 )
 
 add_subdirectory(gsl ${CMAKE_BINARY_DIR}/gsl/ EXCLUDE_FROM_ALL)
