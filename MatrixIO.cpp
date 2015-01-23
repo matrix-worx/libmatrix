@@ -14,7 +14,7 @@ bool matrix::io::readFromBinFile( const std::string& path, matrix::CMatrix& matr
         size_t dimensions[2];
         size_t result = fread( dimensions, sizeof( size_t ), 2, sourceFile );
 
-        if ( result == sizeof( size_t ) * 2 )
+        if ( result == 2 )
         {
             CMatrix m( dimensions[0], dimensions[1] );
             int status = gsl_matrix_fread( sourceFile, m.mMatrix );
@@ -43,7 +43,7 @@ bool matrix::io::writeToBinFile( const std::string& path, const matrix::CMatrix&
 
         size_t result = fwrite( dimensions, sizeof( size_t ), 2, destFile );
 
-        if ( result == sizeof( size_t ) * 2 )
+        if ( result == 2 )
         {
             int status = gsl_matrix_fwrite( destFile, matrix.mMatrix );
             if ( status == GSL_SUCCESS )
@@ -80,6 +80,7 @@ bool matrix::io::readFromTextFile( const std::string& path, matrix::CMatrix& mat
             }
         }
 
+        m.swap( matrix );
         success = true;
     }
 
@@ -102,8 +103,9 @@ bool matrix::io::writeToTextFile(const std::string &path, const matrix::CMatrix 
         {
             for ( size_t j = 0; j < matrix.cols(); j++ )
             {
-                stream << matrix( i, j );
+                stream << matrix( i, j ) << "\t";
             }
+            stream << std::endl;
         }
 
         success = true;

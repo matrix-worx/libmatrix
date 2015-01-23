@@ -145,19 +145,4 @@ private:
 };
 }
 
-namespace std
-{
-
-/**
- * @brief Specialize std::swap template function for matrix::CMatrix class
- */
-template<>
-void swap( matrix::CMatrix& a, matrix::CMatrix& b )
-{
-    a.swap( b );
-}
-
-}
-
-
 #endif // CMATRIX_HPP
