@@ -8,6 +8,8 @@ set(library_sources
     CMatrix.cpp
     CMatrixException.hpp
     CMatrixException.cpp
+    MatrixIO.hpp
+    MatrixIO.cpp
 )
 
 add_subdirectory(gsl ${CMAKE_BINARY_DIR}/gsl/ EXCLUDE_FROM_ALL)

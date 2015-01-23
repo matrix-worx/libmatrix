@@ -9,15 +9,32 @@
 #ifndef CMATRIX_HPP
 #define CMATRIX_HPP
 
-#include "matrix_export.h"
+#include <algorithm>
 #include <gsl/gsl_matrix.h>
+#include <string>
+#include "matrix_export.h"
+#include "MatrixIO.hpp"
+
+namespace matrix
+{
 
 /**
  * @brief The CMatrix class based on GSL matrix implementation
  */
+
 class MATRIX_EXPORT CMatrix
 {
 public:
+
+    /**
+     * @brief CMatrix default constructor
+     * Creates empty invalid matrix for further loading from file
+     *
+     * @sa matrix::io::readFromBinFile()
+     * @sa matrix::io::readFromTextFile()
+     */
+    CMatrix( void );
+
     /**
      * @brief Constructor
      *
@@ -47,21 +64,21 @@ public:
     ~CMatrix( void );
 
     /**
-     * @brief Get matrix rows count
+     * @brief Gets matrix rows count
      *
      * @return Rows count
      */
     size_t rows( void ) const;
 
     /**
-     * @brief Get matrix columns count
+     * @brief Gets matrix columns count
      *
      * @return Columns count
      */
     size_t cols( void ) const;
 
     /**
-     * @brief Get value from the matrix by index
+     * @brief Gets value from the matrix by index
      *
      * @param rowIndex
      * @param columnIndex
@@ -71,7 +88,7 @@ public:
     double get( size_t rowIndex, size_t columnIndex ) const;
 
     /**
-     * @brief Set value of the matrix cell by index
+     * @brief Sets value of the matrix cell by index
      *
      * @param rowIndex
      * @param columnIndex
@@ -80,7 +97,7 @@ public:
     void set( size_t rowIndex, size_t columnIndex, double value );
 
     /**
-     * @brief Simplify syntax for getting values from the matrix
+     * @brief Simplifies syntax for getting values from the matrix
      * Const version
      *
      * @param rowIndex
@@ -90,7 +107,7 @@ public:
     const double& operator()( size_t rowIndex, size_t columnIndex ) const;
 
     /**
-     * @brief Simplify syntax for getting/setting values from/to the matrix
+     * @brief Simplifies syntax for getting/setting values from/to the matrix
      *
      * @param rowIndex
      * @param columnIndex
@@ -98,13 +115,49 @@ public:
      */
     double& operator()( size_t rowIndex, size_t columnIndex );
 
+    /**
+     * @brief Swaps two matrices without data copying
+     *
+     * @param other - reference to another matrix object
+     */
+    void swap( CMatrix& other );
+
+    /**
+     * @brief Check whether matrix valid or not
+     *
+     * @return True if this object is valid matrix, false - otherwise
+     */
+    bool isValid() const { return (mMatrix != 0 ); }
+
+    friend bool ::matrix::io::writeToBinFile( const std::string& path, const CMatrix& matrix );
+    friend bool ::matrix::io::readFromBinFile( const std::string& path, CMatrix& matrix );
+    friend bool ::matrix::io::readFromTextFile( const std::string& path, CMatrix& matrix );
+    friend bool ::matrix::io::writeToTextFile( const std::string& path, const CMatrix& matrix );
+
 private:
 
     void copyRawMatrix( gsl_matrix* destination, gsl_matrix* source );
     gsl_matrix* matrixAlloc( size_t rows, size_t cols );
+    inline void validateMatrix( void ) const;
 
 private:
     gsl_matrix* mMatrix;
 };
+}
+
+namespace std
+{
+
+/**
+ * @brief Specialize std::swap template function for matrix::CMatrix class
+ */
+template<>
+void swap( matrix::CMatrix& a, matrix::CMatrix& b )
+{
+    a.swap( b );
+}
+
+}
+
 
 #endif // CMATRIX_HPP
