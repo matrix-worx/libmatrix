@@ -10,8 +10,11 @@
 #define CMATRIX_HPP
 
 #include <algorithm>
-#include <gsl/gsl_matrix.h>
 #include <string>
+
+#include <boost/thread/shared_mutex.hpp>
+#include <gsl/gsl_matrix.h>
+
 #include "matrix_export.h"
 #include "MatrixIO.hpp"
 
@@ -127,7 +130,7 @@ public:
      *
      * @return True if this object is valid matrix, false - otherwise
      */
-    bool isValid() const { return (mMatrix != 0 ); }
+    bool isValid( void ) const;
 
     friend bool ::matrix::io::writeToBinFile( const std::string& path, const CMatrix& matrix );
     friend bool ::matrix::io::readFromBinFile( const std::string& path, CMatrix& matrix );
@@ -142,7 +145,9 @@ private:
 
 private:
     gsl_matrix* mMatrix;
+    mutable boost::shared_mutex mGuard;
 };
+
 }
 
 #endif // CMATRIX_HPP
