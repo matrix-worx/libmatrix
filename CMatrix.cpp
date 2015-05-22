@@ -35,23 +35,9 @@ CMatrix::CMatrix( const CMatrix& other )
 
 CMatrix& CMatrix::operator=( const CMatrix& other )
 {
-    if ( this != &other )
-    {
-        if ( rows() != other.rows() || cols() != other.cols() )
-        {
-            boost::lock_guard<boost::shared_mutex> lock( mGuard );
-            gsl_matrix* newMatrix = matrixAlloc( other.rows(), other.cols() );
-            copyRawMatrix( newMatrix, other.mMatrix );
-            gsl_matrix_free( mMatrix );
-            mMatrix = newMatrix;
-        }
-        else
-        {
-            boost::lock_guard<boost::shared_mutex> lock( mGuard );
-            copyRawMatrix( mMatrix, other.mMatrix );
-        }
-    }
-    return *this;
+   CMatrix otherCopy( other );
+   swap( otherCopy );
+   return *this;
 }
 
 CMatrix::~CMatrix( void )
